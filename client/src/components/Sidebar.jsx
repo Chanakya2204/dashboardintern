@@ -29,7 +29,7 @@ const Sidebar = () => {
             <li key={item.name} className="mb-4">
               <Link
                 to={item.path}
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                className="flex items-center text-gray-600 hover:text-green-500"
               >
                 <FontAwesomeIcon icon={item.icon} className="h-5 w-5 mr-2" />
                 {item.name}
@@ -41,7 +41,7 @@ const Sidebar = () => {
 
       <div className="border-t border-gray-300 pt-4">
         <button
-          className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded w-full flex items-center justify-center"
+          className="bg-black hover:bg-gray-800 text-white py-2 px-4 rounded w-full flex items-center justify-center hover:text-green-500"
           onClick={handleLogout}
         >
           <FontAwesomeIcon icon={faSignOutAlt} className="h-4 w-4 mr-2" />
