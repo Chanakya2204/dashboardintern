@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { useAuth } from "../context/AuthContent";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
@@ -14,8 +14,6 @@ const Students = () => {
   const [students, setStudents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -56,16 +54,6 @@ const Students = () => {
     }
   };
 
-  const openViewModal = (student) => {
-    setSelectedStudent(student);
-    setIsViewModalOpen(true);
-  };
-
-  const openEditModal = (student) => {
-    setSelectedStudent(student);
-    setIsEditModalOpen(true);
-  };
-
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (!selectedStudent) return;
@@ -74,7 +62,7 @@ const Students = () => {
       setLoading(true);
       await updateDoc(doc(db, "students", selectedStudent.id), selectedStudent);
       fetchStudents();
-      setIsEditModalOpen(false);
+      setSelectedStudent(null); // Clear selected student after edit
     } catch (error) {
       console.error("Error updating student:", error);
     } finally {
@@ -86,14 +74,15 @@ const Students = () => {
     <div className="flex">
       <Sidebar />
       <div className="flex-1 p-8">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">Manage Students</h2>
-
-        <button
-          className="bg-blue-600 text-white py-2 px-6 rounded-md shadow-md hover:bg-blue-700 transition"
-          onClick={toggleModal}
-        >
-          Add Student
-        </button>
+        <div className="relative">
+          <h2 className="text-2xl font-bold mb-6 text-gray-800 inline-block">Manage Students</h2>
+          <button
+            className="absolute top-0 right-0 bg-black text-white py-1 px-4 rounded-md shadow-md hover:bg-gray-800 text-sm"
+            onClick={toggleModal}
+          >
+            Add Student
+          </button>
+        </div>
 
         {/* Show loading spinner if loading */}
         {loading && <p className="mt-4 text-blue-500 font-semibold">Loading...</p>}
@@ -101,37 +90,37 @@ const Students = () => {
         {/* Student Table */}
         {!loading && students.length > 0 && (
           <div className="overflow-x-auto bg-white p-6 rounded-lg shadow-md mt-6">
-            <table className="w-full text-sm text-gray-600">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="p-3 text-left">ID</th>
-                  <th className="p-3 text-left">Name</th>
-                  <th className="p-3 text-left">Class</th>
-                  <th className="p-3 text-left">Section</th>
-                  <th className="p-3 text-left">Roll No</th>
-                  <th className="p-3 text-left">Action</th>
+            <table className="w-full text-sm text-gray-800"> {/* Changed text color to gray-800 */}
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="p-3 text-left font-semibold">ID</th>
+                  <th className="p-3 text-left font-semibold">Name</th>
+                  <th className="p-3 text-left font-semibold">Class</th>
+                  <th className="p-3 text-left font-semibold">Section</th>
+                  <th className="p-3 text-left font-semibold">Roll No</th>
+                  <th className="p-3 text-left font-semibold">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {students.map((student, index) => (
                   <tr key={student.id} className="border-t hover:bg-gray-50">
-                    <td className="p-3">{index + 1}</td>
-                    <td className="p-3">{student.name}</td>
-                    <td className="p-3">{student.class}</td>
-                    <td className="p-3">{student.section || "N/A"}</td>
-                    <td className="p-3">{student.rollNo}</td>
+                    <td className="p-3 text-gray-800">{index + 1}</td>
+                    <td className="p-3 text-gray-800">{student.name}</td>
+                    <td className="p-3 text-gray-800">{student.class}</td>
+                    <td className="p-3 text-gray-800">{student.section || "N/A"}</td>
+                    <td className="p-3 text-gray-800">{student.rollNo}</td>
                     <td className="p-3 flex space-x-4">
-                      <button className="text-blue-500 hover:text-blue-700" onClick={() => openViewModal(student)}>
-                        <FontAwesomeIcon icon={faEye} size="lg" />
+                      <button className="text-gray-500 hover:text-gray-700" onClick={() => openViewModal(student)}>
+                        <FontAwesomeIcon icon={faEye} size="small" />
                       </button>
-                      <button className="text-yellow-500 hover:text-yellow-700" onClick={() => openEditModal(student)}>
-                        <FontAwesomeIcon icon={faEdit} size="lg" />
+                      <button className="text-gray-500 hover:text-gray-700" onClick={() => openEditModal(student)}>
+                        <FontAwesomeIcon icon={faEdit} size="small" />
                       </button>
                       <button
-                        className="text-red-500 hover:text-red-700"
+                        className="text-gray-500 hover:text-gray-700"
                         onClick={() => deleteStudent(student.id)}
                       >
-                        <FontAwesomeIcon icon={faTrash} size="lg" />
+                        <FontAwesomeIcon icon={faTrash} size="small" />
                       </button>
                     </td>
                   </tr>
@@ -145,24 +134,24 @@ const Students = () => {
         {isModalOpen && <AddStudentModal toggleModal={toggleModal} fetchStudents={fetchStudents} />}
 
         {/* View Student Modal */}
-        {isViewModalOpen && selectedStudent && (
+        {selectedStudent && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-3/4">
               <h3 className="text-2xl font-semibold mb-4 text-center">Student Details</h3>
               <ul>
                 {Object.entries(selectedStudent).map(([key, value]) => (
-                  <li key={key} className="mb-2">
+                  <li key={key} className="mb-2 text-gray-800">
                     <strong>{key}:</strong> {value}
                   </li>
                 ))}
               </ul>
-              <button className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-md" onClick={() => setIsViewModalOpen(false)}>Close</button>
+              <button className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-md" onClick={() => setSelectedStudent(null)}>Close</button>
             </div>
           </div>
         )}
 
         {/* Edit Student Modal */}
-        {isEditModalOpen && selectedStudent && (
+        {selectedStudent && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-3/4">
               <h3 className="text-2xl font-semibold mb-4 text-center">Edit Student</h3>
@@ -170,7 +159,7 @@ const Students = () => {
                 {Object.entries(selectedStudent).map(([key, value]) =>
                   key !== "id" ? (
                     <div key={key}>
-                      <label className="block">{key}</label>
+                      <label className="block text-gray-800">{key}</label>
                       <input
                         type="text"
                         name={key}
@@ -183,7 +172,7 @@ const Students = () => {
                   ) : null
                 )}
                 <div className="col-span-2 flex justify-end space-x-4">
-                  <button type="button" className="bg-gray-500 text-white py-2 px-4 rounded-md" onClick={() => setIsEditModalOpen(false)}>Cancel</button>
+                  <button type="button" className="bg-gray-500 text-white py-2 px-4 rounded-md" onClick={() => setSelectedStudent(null)}>Cancel</button>
                   <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded-md">Save Changes</button>
                 </div>
               </form>
